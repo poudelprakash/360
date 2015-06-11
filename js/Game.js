@@ -9,7 +9,7 @@
 
 	var playState = {
 		preload: function(){
-			game.load.image('player', 'assets/images/reflector.png');
+			game.load.image('shield', 'assets/images/reflector.png');
 		},
 
 		create: function(){
@@ -18,38 +18,40 @@
 			// add arcade physics
 			game.physics.startSystem(Phaser.Physics.ARCADE);
 
-			// add player
-			this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player');
-			game.physics.arcade.enable(this.player);
-			// Set the anchor point to the bottom left of the sprite
-			this.player.anchor.setTo(0, 1);
+			this.shield = game.add.sprite(game.world.centerX, game.world.centerY, 'shield');
+			game.physics.arcade.enable(this.shield);
 
+			this.shield.angle = 0;
+			this.shield.radius = 70;
+
+			// handle keyboard inputs
 			this.cursor = game.input.keyboard.createCursorKeys();
 
 		},
 
 		update: function(){
-			this.movePlayer();
-
+			this.moveShield();
 		},
 
-		movePlayer: function() {
+		moveShield: function() {
 		    // If the left arrow key is pressed
 		    if (this.cursor.left.isDown) {
-		        // Move the player to the left
-		        this.player.body.velocity.x = -200;
+		        this.shield.angle -= 0.25;
+		        this.shield.x = game.world.centerX + this.shield.radius* Math.cos(this.shield.angle);
+		        this.shield.y = game.world.centerY + this.shield.radius* Math.sin(this.shield.angle);
 		    }
 
 		   // If the right arrow key is pressed
 		   else if (this.cursor.right.isDown) {
-		       // Move the player to the right
-		       this.player.body.velocity.x = 200;
+		    		        this.shield.angle += 0.25;
+		        this.shield.x = game.world.centerX + this.shield.radius* Math.cos(this.shield.angle);
+		        this.shield.y = game.world.centerY + this.shield.radius* Math.sin(this.shield.angle);
+
 		   }
 
 		   // If neither the right or left arrow key is pressed
 		   else {
 		       // Stop the player
-		       this.player.body.velocity.x = 0;
 		   }
 
 		},
