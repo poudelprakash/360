@@ -16,6 +16,7 @@
 		},
 
 		create: function(){
+			this.timer = game.add.text(16, 16, '00:00', { fontSize: '32px', fill: '#000' });
 			game.stage.backgroundColor = '#3498db';
 
 			// add arcade physics
@@ -26,7 +27,7 @@
 			this.circle.scale.y =0.123;
 			this.circle.anchor.setTo(0.5,0.5);
 
-			this.shield = game.add.sprite(game.world.centerX+50, game.world.centerY, 'shield');
+			this.shield = game.add.sprite(game.world.centerX + 75, game.world.centerY, 'shield');
 			game.physics.arcade.enable(this.shield);
 
 			this.shield.angle = 0;
@@ -37,11 +38,22 @@
 
 			// handle keyboard inputs
 			this.cursor = game.input.keyboard.createCursorKeys();
-
 		},
 
 		update: function(){
 			this.moveShield();
+			this.updateTimer();
+		},
+
+		updateTimer: function(){
+				 var seconds = Math.floor(game.time.now / 1000) % 60;
+				 var milliseconds = Math.floor(game.time.now) % 60;
+				//If any of the digits becomes a single digit number, pad it with a zero
+				if (milliseconds < 10)
+					milliseconds = '0' + milliseconds;
+				if (seconds < 10)
+					seconds = '0' + seconds;
+				this.timer.setText(seconds + ':'+ milliseconds);
 		},
 
 		moveShield: function() {
@@ -66,7 +78,7 @@
 		       // Stop the player
 		   }
 
-		},
+		}
 	};
 
 	game.state.add('playState', playState);
