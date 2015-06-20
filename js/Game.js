@@ -1,4 +1,4 @@
-var game = new Phaser.Game(600, 400, Phaser.CANVAS, 'de-ghumake-game');
+var game = new Phaser.Game(800, 400, Phaser.CANVAS, 'de-ghumake-game');
 
 var playState = {
     preload: function () {
@@ -17,8 +17,8 @@ var playState = {
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         this.circle = game.add.sprite(game.world.centerX, game.world.centerY, 'circle');
-        this.circle.scale.x = 0.123;
-        this.circle.scale.y = 0.123;
+        this.circle.scale.x = 0.00123;
+        this.circle.scale.y = 0.00123;
         this.circle.anchor.setTo(0.5, 0.5);
 
         this.enemies = game.add.group();
@@ -37,6 +37,9 @@ var playState = {
         this.rotationSpeed = 0.18;
 
         this.generateEnemyPositions();
+            //  Once the event has been called 10 times it will never be called again.
+
+            game.time.events.repeat(Phaser.Timer.SECOND * 1, 25, this.spawnEnemy, this);
 
         this.cursor = game.input.keyboard.createCursorKeys();
     },
@@ -73,6 +76,7 @@ var playState = {
         enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.circle);
         enemy.scale.x = 4;
         enemy.scale.y = 4;
+        enemy.anchor.setTo(0.5,0.5);
         game.physics.arcade.enable(enemy);
         this.enemies.add(enemy);
         this.fireBullet(enemy);
@@ -81,6 +85,7 @@ var playState = {
     fireBullet: function(enemy){
         var enemy = enemy;
         var bullet =  game.add.sprite(enemy.x, enemy.y, 'bullet');
+        bullet.anchor.setTo(0.5,0.5);
         game.physics.arcade.enable(bullet);
         bullet.rotation = game.physics.arcade.angleBetween(bullet, this.circle);
         game.physics.arcade.moveToObject(bullet, this.circle, 400);
