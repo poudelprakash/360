@@ -36,8 +36,6 @@ var playState = {
         this.rotation = 0;
         this.rotationSpeed = 0.18;
 
-        var circle = this.circlePoints(180);
-
         this.generateEnemyPositions();
 
         this.cursor = game.input.keyboard.createCursorKeys();
@@ -115,26 +113,6 @@ var playState = {
         else {
             this.shield.rotation = this.rotation + Math.PI / 2;
         }
-    },
-
-    bullet: function () {
-
-    },
-
-    circlePoints: function (radius) {
-        var angle = this.getRandom(0, 360);
-        var x = radius * Math.cos(this.toRadians(angle)) + game.world.centerX;
-        var y = radius * Math.sin(this.toRadians(angle)) + game.world.centerY;
-
-        return {
-            x: x,
-            y: y
-        };
-    },
-
-    getRandom: function (min, max) {
-        var value = Math.floor(Math.random() * (max - min + 1)) + min;
-        return value ? value : this.getRandom(min, max);
     },
 
     toRadians: function (angle) {
