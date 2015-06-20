@@ -45,12 +45,19 @@ var playState = {
         this.moveShield();
         this.updateTimer();
 
-        game.physics.arcade.overlap(this.shield, this.bullet, this.reflectBack, null, this);
+        game.physics.arcade.overlap(this.shield, this.bullets, this.reflectBack, null, this);
+        game.physics.arcade.collide(this.bullets, this.enemies, this.helloYamraj, null, this);
 
         if (this.cursor.up.isDown) {
             this.spawnEnemy();
         }
     },
+
+    helloYamraj: function(bullet,enemy){
+        bullet.kill();
+        enemy.kill();
+    },
+
     generateEnemyPositions: function(){
         var enemyHeight = 20;
         this.enemyPositions = [
@@ -66,22 +73,23 @@ var playState = {
         enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.circle);
         enemy.scale.x = 4;
         enemy.scale.y = 4;
+        game.physics.arcade.enable(enemy);
         this.enemies.add(enemy);
         this.fireBullet(enemy);
     },
 
     fireBullet: function(enemy){
-            var enemy = enemy;
-            var bullet =  game.add.sprite(enemy.x, enemy.y, 'bullet');
-            game.physics.arcade.enable(bullet);
-            bullet.rotation = game.physics.arcade.angleBetween(bullet, this.circle);
-            game.physics.arcade.moveToObject(bullet, this.circle, 400);
-            this.bullets.add(bullet);        
+        var enemy = enemy;
+        var bullet =  game.add.sprite(enemy.x, enemy.y, 'bullet');
+        game.physics.arcade.enable(bullet);
+        bullet.rotation = game.physics.arcade.angleBetween(bullet, this.circle);
+        game.physics.arcade.moveToObject(bullet, this.circle, 400);
+        this.bullets.add(bullet);        
     },
 
     reflectBack: function (shield, bullet) {
-        this.bullet.body.velocity.x = -2 * bullet.body.velocity.x;
-        this.bullet.body.velocity.y = -2 * bullet.body.velocity.y;
+        bullet.body.velocity.x = -2 * bullet.body.velocity.x;
+        bullet.body.velocity.y = -2 * bullet.body.velocity.y;
     },
 
     updateTimer: function () {
