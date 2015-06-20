@@ -31,15 +31,15 @@ var playState = {
         this.shield.radius = 75;
         this.shield.scale.x = 0.6;
         this.shield.scale.y = 0.6;
-        this.shield.anchor.set(0.2);
+        this.shield.anchor.set(0.5, 0.5);
 
         this.rotation = 0;
         this.rotationSpeed = 0.18;
 
         this.generateEnemyPositions();
-            //  Once the event has been called 10 times it will never be called again.
+        //  Once the event has been called 10 times it will never be called again.
 
-            game.time.events.repeat(Phaser.Timer.SECOND * 1, 25, this.spawnEnemy, this);
+        game.time.events.repeat(Phaser.Timer.SECOND * 1, 25, this.spawnEnemy, this);
 
         this.cursor = game.input.keyboard.createCursorKeys();
     },
@@ -56,40 +56,40 @@ var playState = {
         }
     },
 
-    helloYamraj: function(bullet,enemy){
+    helloYamraj: function (bullet, enemy) {
         bullet.kill();
         enemy.kill();
     },
 
-    generateEnemyPositions: function(){
+    generateEnemyPositions: function () {
         var enemyHeight = 20;
         this.enemyPositions = [
-        [8*enemyHeight, 3*enemyHeight],[game.world.centerX, enemyHeight], [game.world.width-2*enemyHeight, 2*enemyHeight],
-        [enemyHeight, game.world.centerY], [game.world.width-2*enemyHeight, game.world.centerY],
-        [enemyHeight,game.world.height-2*enemyHeight], [game.world.centerX, game.world.height-enemyHeight],  [game.world.width-2*enemyHeight, game.world.height-enemyHeight]
+            [8 * enemyHeight, 3 * enemyHeight], [game.world.centerX, enemyHeight], [game.world.width - 2 * enemyHeight, 2 * enemyHeight],
+            [enemyHeight, game.world.centerY], [game.world.width - 2 * enemyHeight, game.world.centerY],
+            [enemyHeight, game.world.height - 2 * enemyHeight], [game.world.centerX, game.world.height - enemyHeight], [game.world.width - 2 * enemyHeight, game.world.height - enemyHeight]
         ]
     },
 
-    spawnEnemy: function(){
-        var enemyPosition = this.enemyPositions[game.rnd.integerInRange(0,7)];
-        var enemy = game.add.sprite(enemyPosition[0], enemyPosition[1],'enemy');
+    spawnEnemy: function () {
+        var enemyPosition = this.enemyPositions[game.rnd.integerInRange(0, 7)];
+        var enemy = game.add.sprite(enemyPosition[0], enemyPosition[1], 'enemy');
         enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.circle);
         enemy.scale.x = 4;
         enemy.scale.y = 4;
-        enemy.anchor.setTo(0.5,0.5);
+        enemy.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(enemy);
         this.enemies.add(enemy);
         this.fireBullet(enemy);
     },
 
-    fireBullet: function(enemy){
+    fireBullet: function (enemy) {
         var enemy = enemy;
-        var bullet =  game.add.sprite(enemy.x, enemy.y, 'bullet');
-        bullet.anchor.setTo(0.5,0.5);
+        var bullet = game.add.sprite(enemy.x, enemy.y, 'bullet');
+        bullet.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(bullet);
         bullet.rotation = game.physics.arcade.angleBetween(bullet, this.circle);
         game.physics.arcade.moveToObject(bullet, this.circle, 400);
-        this.bullets.add(bullet);        
+        this.bullets.add(bullet);
     },
 
     reflectBack: function (shield, bullet) {
@@ -126,11 +126,8 @@ var playState = {
         else {
             this.shield.rotation = this.rotation + Math.PI / 2;
         }
-    },
-
-    toRadians: function (angle) {
-        return angle * (Math.PI / 180);
     }
+
 };
 
 game.state.add('playState', playState);
