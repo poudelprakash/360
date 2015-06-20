@@ -5,6 +5,7 @@ var playState = {
         game.load.image('circle', 'assets/images/circle.png');
         game.load.image('shield', 'assets/images/reflector.png');
         game.load.image('bullet', 'assets/images/bullet.png');
+        game.load.image('enemy', 'assets/images/enemy.png');
     },
 
     create: function () {
@@ -20,6 +21,9 @@ var playState = {
         this.circle.scale.y = 0.123;
         this.circle.anchor.setTo(0.5, 0.5);
 
+        this.enemies = game.add.group();
+        this.bullets = game.add.group();
+
         this.shield = game.add.sprite(game.world.centerX + 75, game.world.centerY, 'shield');
         game.physics.arcade.enable(this.shield);
 
@@ -33,10 +37,8 @@ var playState = {
         this.rotationSpeed = 0.18;
 
         var circle = this.circlePoints(180);
-        this.bullet = game.add.sprite(circle.x, circle.y, 'bullet');
-        game.physics.arcade.enable(this.bullet);
-        this.bullet.rotation = game.physics.arcade.angleBetween(this.bullet, this.circle);
-        game.physics.arcade.moveToObject(this.bullet, this.circle, 400);
+
+        this.generateEnemyPositions();
 
         this.cursor = game.input.keyboard.createCursorKeys();
     },
@@ -46,6 +48,37 @@ var playState = {
         this.updateTimer();
 
         game.physics.arcade.overlap(this.shield, this.bullet, this.reflectBack, null, this);
+
+        if (this.cursor.up.isDown) {
+            this.spawnEnemy();
+        }
+    },
+    generateEnemyPositions: function(){
+        var enemyHeight = 20;
+        this.enemyPositions = [
+        [8*enemyHeight, 3*enemyHeight],[game.world.centerX, enemyHeight], [game.world.width-2*enemyHeight, 2*enemyHeight],
+        [enemyHeight, game.world.centerY], [game.world.width-2*enemyHeight, game.world.centerY],
+        [enemyHeight,game.world.height-2*enemyHeight], [game.world.centerX, game.world.height-enemyHeight],  [game.world.width-2*enemyHeight, game.world.height-enemyHeight]
+        ]
+    },
+
+    spawnEnemy: function(){
+        var enemyPosition = this.enemyPositions[game.rnd.integerInRange(0,7)];
+        var enemy = game.add.sprite(enemyPosition[0], enemyPosition[1],'enemy');
+        enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.circle);
+        enemy.scale.x = 4;
+        enemy.scale.y = 4;
+        this.enemies.add(enemy);
+        this.fireBullet(enemy);
+    },
+
+    fireBullet: function(enemy){
+            var enemy = enemy;
+            var bullet =  game.add.sprite(enemy.x, enemy.y, 'bullet');
+            game.physics.arcade.enable(bullet);
+            bullet.rotation = game.physics.arcade.angleBetween(bullet, this.circle);
+            game.physics.arcade.moveToObject(bullet, this.circle, 400);
+            this.bullets.add(bullet);        
     },
 
     reflectBack: function (shield, bullet) {
