@@ -6,13 +6,13 @@ var playState = {
         game.load.image('shield', 'assets/images/reflector.png');
         game.load.image('bullet', 'assets/images/bullet.png');
         game.load.image('enemy', 'assets/images/enemy.png');
+        game.load.image('bg', 'assets/images/new-background.jpg');
     },
 
     create: function () {
+				this.bg = game.add.tileSprite(0,0,600,400,'bg');
         this.circle = new Phaser.Circle(game.world.centerX, game.world.centerY, 75 * 2);
         this.timer = game.add.text(16, 16, '00:00', {fontSize: '32px', fill: '#000'});
-
-        game.stage.backgroundColor = '#3498db';
 
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
@@ -31,7 +31,7 @@ var playState = {
         this.shield.radius = 75;
         this.shield.scale.x = 0.6;
         this.shield.scale.y = 0.6;
-        this.shield.anchor.set(0.2);
+        this.shield.anchor.set(0.5);
 
         this.rotation = 0;
         this.rotationSpeed = 0.18;
@@ -42,6 +42,7 @@ var playState = {
     },
 
     update: function () {
+			this.bg.tilePosition.y += 2;
         this.moveShield();
         this.updateTimer();
 
@@ -84,7 +85,7 @@ var playState = {
         game.physics.arcade.enable(bullet);
         bullet.rotation = game.physics.arcade.angleBetween(bullet, this.circle);
         game.physics.arcade.moveToObject(bullet, this.circle, 400);
-        this.bullets.add(bullet);        
+        this.bullets.add(bullet);
     },
 
     reflectBack: function (shield, bullet) {
