@@ -99,7 +99,7 @@ var playState = {
               bullet.kill();
           },this);
        }
-       if(this.enemies.length>1){
+       if(this.enemies.length>=1){
            this.enemies.forEach(function(enemy) {
               enemy.kill();
           },this);
