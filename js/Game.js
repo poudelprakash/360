@@ -16,7 +16,7 @@ var playState = {
         this.score = 0;
         this.life = 10;
 
-        this.spawnDelay = 1600; 
+        this.spawnDelay = 1600;
         this.spawnTimer = game.time.time;
 
         game.stage.backgroundColor = '#3498db';
@@ -64,11 +64,6 @@ var playState = {
         if (this.cursor.up.isDown || (this.game.time.time > this.spawnTimer)) {
             this.spawnEnemy();
         }
-
-
-
-
-
     },
     checkMissedBullets: function(){
 
