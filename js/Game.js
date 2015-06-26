@@ -1,4 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.AUTO, 'de-ghumake-game');
+var game = new Phaser.Game(600, 400, Phaser.CANVAS, 'de-ghumake-game');
 
 var playState = {
     preload: function () {
@@ -11,6 +11,11 @@ var playState = {
 
     create: function () {
         this.timer = game.add.text(16, 16, '00:00', {fontSize: '32px', fill: '#000'});
+
+        this.score = 0;
+        this.life = 10;
+        this.spawnDelay = 1600;
+        this.spawnTimer=game.time.time;
 
         game.stage.backgroundColor = '#3498db';
         game.scale.pageAlignHorizontally = true;
@@ -27,7 +32,9 @@ var playState = {
 
         this.enemies = game.add.group();
         this.redBullets = game.add.group();
+        this.redBullets.enableBody = true;
         this.blueBullets = game.add.group();
+        this.blueBullets.enableBody = true;
 
         this.shield = game.add.sprite(game.world.centerX + 75, game.world.centerY, 'shield');
         game.physics.arcade.enable(this.shield);
@@ -43,7 +50,7 @@ var playState = {
 
         this.generateEnemyPositions();
 
-        game.time.events.repeat(Phaser.Timer.SECOND * 1, 25, this.spawnEnemy, this);
+        // game.time.events.repeat(Phaser.Timer.SECOND * 1, 25, this.spawnEnemy, this);
 
         this.cursor = game.input.keyboard.createCursorKeys();
     },
@@ -55,12 +62,24 @@ var playState = {
         game.physics.arcade.overlap(this.shield, this.redBullets, this.reflectBack, null, this);
         game.physics.arcade.collide(this.blueBullets, this.enemies, this.deathHandler, null, this);
 
-        if (this.cursor.up.isDown) {
+        this.checkMissedBullets();
+
+        if (this.cursor.up.isDown || (this.game.time.time > this.spawnTimer)) {
             this.spawnEnemy();
         }
+
+
+
+
+
+    },
+    checkMissedBullets: function(){
+
     },
 
     deathHandler: function (blueBullet, enemy) {
+        this.score++;
+        console.log('score'+this.score);
         blueBullet.kill();
         enemy.kill();
     },
@@ -80,6 +99,7 @@ var playState = {
     },
 
     spawnEnemy: function () {
+
         var enemyPosition = this.enemyPositions[game.rnd.integerInRange(0, 7)];
         var enemy = game.add.sprite(enemyPosition[0], enemyPosition[1], 'enemy');
         enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.circle);
@@ -90,6 +110,11 @@ var playState = {
 
         this.enemies.add(enemy);
         this.fireBullet(enemy);
+        this.spawnTimer = this.game.time.time + this.spawnDelay;
+    },
+
+    clearEnemies: function(){
+        this.enemies.destroy();
     },
 
     fireBullet: function (enemy) {
@@ -98,8 +123,17 @@ var playState = {
         game.physics.arcade.enable(redBullet);
         redBullet.rotation = game.physics.arcade.angleBetween(redBullet, this.circle);
         game.physics.arcade.moveToObject(redBullet, this.circle, 500);
+        
+        redBullet.events.onOutOfBounds.add( this.goodbye );
 
         this.redBullets.add(redBullet);
+    },
+
+// function that gets called when bullet goes out of sight
+    goodbye: function(redBullet){
+        console.log('ef');
+        redBullet.kill();
+        this.clearEnemies();
     },
 
     reflectBack: function (shield, redBullet) {
