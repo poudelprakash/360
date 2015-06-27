@@ -6,6 +6,7 @@ var playState = {
         game.load.image('redBullet', 'assets/images/red-bullet.png');
         game.load.image('blueBullet', 'assets/images/blue-bullet.png')
         game.load.image('enemy', 'assets/images/enemy.png');
+        game.load.audio('hit', 'assets/audio/hit.wav');
     },
 
     create: function () {
@@ -53,7 +54,7 @@ var playState = {
 
         this.checkMissedBullets();
 
-        if (this.cursor.up.isDown || (this.game.time.time > this.spawnTimer)) {
+        if (this.game.time.time > this.spawnTimer) {
             this.spawnEnemy();
         }
     },
@@ -114,6 +115,7 @@ var playState = {
 
     reflectBack: function (shield, redBullet) {
         redBullet.kill();
+        game.sound.play('hit');
         var blueBullet = game.add.sprite(redBullet.position.x, redBullet.position.y, 'blueBullet');
         blueBullet.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(blueBullet);
