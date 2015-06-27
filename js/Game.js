@@ -13,11 +13,11 @@ var playState = {
         this.life = 10;
         this.spawnDelay = 1600;
         this.spawnTimer = game.time.time;
-        this.enemyRadius = game.world.height / 2.1;
-        this.timer = game.add.text(16, 16, '00:00', {fontSize: '32px', fill: '#000'});
+        this.enemyRadius = game.world.height / 2.2;
+        this.timer = game.add.text(16, 16, '00:00', {fontSize: '32px', fill: '#fff'});
         this.center = new Phaser.Point(game.world.centerX, game.world.centerY);
 
-        game.stage.backgroundColor = '#3498db';
+        game.stage.backgroundColor = '#8f7a66';
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
         game.scale.refresh();
@@ -73,8 +73,8 @@ var playState = {
         var enemyPosition = this.circlePoints(this.enemyRadius);
         var enemy = game.add.sprite(enemyPosition.x, enemyPosition.y, 'enemy');
         enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.center);
-        enemy.scale.x = 4;
-        enemy.scale.y = 4;
+        enemy.scale.x = 3.5;
+        enemy.scale.y = 3.5;
         enemy.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(enemy);
 
@@ -102,7 +102,7 @@ var playState = {
         redBullet.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(redBullet);
         redBullet.rotation = game.physics.arcade.angleBetween(redBullet, this.center);
-        game.physics.arcade.moveToObject(redBullet, this.center, 600);
+        game.physics.arcade.moveToObject(redBullet, this.center, 500);
         this.redBullets.add(redBullet);
     },
 
