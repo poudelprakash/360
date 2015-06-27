@@ -4,7 +4,18 @@
     <title>De-Ghumake Game</title>
     <link rel="stylesheet" type="text/css" href="css/style.css">
     <script type="text/javascript" src="js/phaser.js"></script>
-    <script type="text/javascript" src="js/Game.js"></script>
+    <script type="text/javascript" src="js/preload.js"></script>
+    <script type="text/javascript" src="js/gamestart.js"></script>
+    <script type="text/javascript" src="js/play.js"></script>
+    <script type="text/javascript" src="js/gameover.js"></script>
+    <script type="text/javascript">
+        var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'de-ghumake-game');
+        game.state.add('Preload', preload);
+        game.state.add('GameStart', gameStart);
+        game.state.add('Play', play);
+        game.state.add('GameOver', gameOver);
+        game.state.start('Preload');
+    </script>
 </head>
 <body>
 <div id="de-ghumake-game"></div>

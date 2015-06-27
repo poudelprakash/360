@@ -1,14 +1,4 @@
-var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'de-ghumake-game');
-
-var playState = {
-    preload: function () {
-        game.load.image('shield', 'assets/images/reflector.png');
-        game.load.image('redBullet', 'assets/images/red-bullet.png');
-        game.load.image('blueBullet', 'assets/images/blue-bullet.png')
-        game.load.image('enemy', 'assets/images/enemy.png');
-        game.load.audio('hit', 'assets/audio/hit.wav');
-    },
-
+var play = {
     create: function () {
         this.score = 0;
         this.life = 10;
@@ -16,12 +6,21 @@ var playState = {
         this.spawnTimer = game.time.time;
         this.enemyRadius = game.world.height / 2.2;
         this.timer = game.add.text(16, 16, '00:00', {fontSize: '32px', fill: '#fff'});
-        this.center = new Phaser.Point(game.world.centerX, game.world.centerY);
 
-        game.stage.backgroundColor = '#8f7a66';
-        game.scale.pageAlignHorizontally = true;
-        game.scale.pageAlignVertically = true;
-        game.scale.refresh();
+        this.center = game.add.graphics(game.world.centerX, game.world.centerY);
+        this.circle = game.add.graphics(game.world.centerX, game.world.centerY);
+        this.circle.beginFill(0xbbada0, 1.0);
+        this.circle.drawCircle(0, 0, 80);
+
+        this.scoreText = game.add.text(game.world.centerX, game.world.centerY, '');
+        this.scoreText.fontSize = 32;
+        this.scoreText.fill = '#fff';
+        this.scoreText.anchor.setTo(0.5);
+        this.scoreText.align = 'center';
+
+        this.hit = game.add.audio('hit');
+        this.hit.volume = -0.3;
+
         game.physics.startSystem(Phaser.Physics.ARCADE);
 
         this.enemies = game.add.group();
@@ -37,7 +36,7 @@ var playState = {
         this.shield.radius = 75;
         this.shield.scale.x = 0.8;
         this.shield.scale.y = 0.8;
-        this.shield.anchor.set(0.5, 0.5);
+        this.shield.anchor.setTo(0.5);
 
         this.rotation = 0;
         this.rotationSpeed = 0.18;
@@ -46,21 +45,16 @@ var playState = {
     },
 
     update: function () {
+        this.scoreText.setText(this.score);
         this.moveShield();
         this.updateTimer();
 
         game.physics.arcade.overlap(this.shield, this.redBullets, this.reflectBack, null, this);
         game.physics.arcade.collide(this.blueBullets, this.enemies, this.deathHandler, null, this);
 
-        this.checkMissedBullets();
-
-        if (this.game.time.time > this.spawnTimer) {
+        if (game.time.time > this.spawnTimer) {
             this.spawnEnemy();
         }
-    },
-
-    checkMissedBullets: function () {
-
     },
 
     deathHandler: function (blueBullet, enemy) {
@@ -71,9 +65,10 @@ var playState = {
 
     spawnEnemy: function () {
         this.clearEnemies();
+
         var enemyPosition = this.circlePoints(this.enemyRadius);
         var enemy = game.add.sprite(enemyPosition.x, enemyPosition.y, 'enemy');
-        enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.center);
+        enemy.rotation = game.physics.arcade.angleBetween(enemy, this.center);
         enemy.scale.x = 3.5;
         enemy.scale.y = 3.5;
         enemy.anchor.setTo(0.5, 0.5);
@@ -81,7 +76,7 @@ var playState = {
 
         this.enemies.add(enemy);
         this.fireBullet(enemy);
-        this.spawnTimer = this.game.time.time + this.spawnDelay;
+        this.spawnTimer = game.time.time + this.spawnDelay;
     },
 
     clearEnemies: function () {
@@ -107,19 +102,14 @@ var playState = {
         this.redBullets.add(redBullet);
     },
 
-    bulletOut: function (redBullet) {
-        console.log('ef');
-        redBullet.kill();
-        this.clearEnemies();
-    },
-
     reflectBack: function (shield, redBullet) {
         redBullet.kill();
-        game.sound.play('hit');
+        this.hit.play();
+
         var blueBullet = game.add.sprite(redBullet.position.x, redBullet.position.y, 'blueBullet');
-        blueBullet.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(blueBullet);
 
+        blueBullet.anchor.setTo(0.5, 0.5);
         blueBullet.rotation = redBullet.rotation;
         blueBullet.body.velocity.x = -2 * redBullet.body.velocity.x;
         blueBullet.body.velocity.y = -2 * redBullet.body.velocity.y;
@@ -160,19 +150,12 @@ var playState = {
 
     circlePoints: function (radius) {
         var angle = game.rnd.integerInRange(0, 360);
-        var x = radius * Math.cos(this.toRadians(angle)) + game.world.centerX;
-        var y = radius * Math.sin(this.toRadians(angle)) + game.world.centerY;
+        var x = radius * Math.cos(game.math.degToRad(angle)) + game.world.centerX;
+        var y = radius * Math.sin(game.math.degToRad(angle)) + game.world.centerY;
 
         return {
             x: x,
             y: y
         };
-    },
-
-    toRadians: function (angle) {
-        return angle * (Math.PI / 180);
     }
 };
-
-game.state.add('playState', playState);
-game.state.start('playState');
