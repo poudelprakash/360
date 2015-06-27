@@ -1,12 +1,20 @@
-var gameStart = {
-    preload: function () {
-        game.stage.backgroundColor = '#8f7a66';
-        game.scale.pageAlignHorizontally = true;
-        game.scale.pageAlignVertically = true;
-        game.scale.setScreenSize();
-        game.scale.refresh();
-    },
+var gameStart = function (game) {
+
+};
+
+gameStart.prototype = {
     create: function () {
-        game.state.start('Play');
+        this.music = this.add.audio('music');
+        this.music.play();
+
+        var playButton = this.add.text(this.world.centerX, this.world.centerY, 'Play', {
+            font: "40px roboto_slabregular",
+            fill: '#fff'
+        });
+        playButton.anchor.setTo(0.5);
+        playButton.inputEnabled = true;
+        playButton.events.onInputDown.add(function () {
+            this.state.start('Play');
+        }, this);
     }
 }
