@@ -2,7 +2,6 @@ var game = new Phaser.Game(800, 600, Phaser.CANVAS, 'de-ghumake-game');
 
 var playState = {
     preload: function () {
-        game.load.image('player', 'assets/images/circle.png');
         game.load.image('shield', 'assets/images/reflector.png');
         game.load.image('redBullet', 'assets/images/red-bullet.png');
         game.load.image('blueBullet', 'assets/images/blue-bullet.png')
@@ -10,28 +9,19 @@ var playState = {
     },
 
     create: function () {
-
-        this.timer = game.add.text(16, 16, '00:00', {fontSize: '32px', fill: '#000'});
-
         this.score = 0;
         this.life = 10;
-
         this.spawnDelay = 1600;
         this.spawnTimer = game.time.time;
+        this.enemyRadius = game.world.height / 2.1;
+        this.timer = game.add.text(16, 16, '00:00', {fontSize: '32px', fill: '#000'});
+        this.center = new Phaser.Point(game.world.centerX, game.world.centerY);
 
         game.stage.backgroundColor = '#3498db';
         game.scale.pageAlignHorizontally = true;
         game.scale.pageAlignVertically = true;
         game.scale.refresh();
-
         game.physics.startSystem(Phaser.Physics.ARCADE);
-
-        this.enemyRadius = game.world.height/2.7;
-
-        this.player = game.add.sprite(game.world.centerX, game.world.centerY, 'player');
-        this.player.scale.x = 0.00123;
-        this.player.scale.y = 0.00123;
-        this.player.anchor.setTo(0.5, 0.5);
 
         this.enemies = game.add.group();
         this.redBullets = game.add.group();
@@ -67,13 +57,13 @@ var playState = {
             this.spawnEnemy();
         }
     },
-    checkMissedBullets: function(){
+
+    checkMissedBullets: function () {
 
     },
 
     deathHandler: function (blueBullet, enemy) {
         this.score++;
-        console.log('score'+this.score);
         blueBullet.kill();
         enemy.kill();
     },
@@ -82,9 +72,9 @@ var playState = {
         this.clearEnemies();
         var enemyPosition = this.circlePoints(this.enemyRadius);
         var enemy = game.add.sprite(enemyPosition.x, enemyPosition.y, 'enemy');
-        enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.player);
-        enemy.scale.x = 3;
-        enemy.scale.y = 3;
+        enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.center);
+        enemy.scale.x = 4;
+        enemy.scale.y = 4;
         enemy.anchor.setTo(0.5, 0.5);
         game.physics.arcade.enable(enemy);
 
@@ -93,31 +83,30 @@ var playState = {
         this.spawnTimer = this.game.time.time + this.spawnDelay;
     },
 
-    clearEnemies: function(){
-        if(this.redBullets.length>0){
-           this.redBullets.forEach(function(bullet) {
-              bullet.kill();
-          },this);
-       }
-       if(this.enemies.length>=1){
-           this.enemies.forEach(function(enemy) {
-              enemy.kill();
-          },this);
-       }
+    clearEnemies: function () {
+        if (this.redBullets.length > 0) {
+            this.redBullets.forEach(function (bullet) {
+                bullet.kill();
+            }, this);
+        }
+        if (this.enemies.length >= 1) {
+            this.enemies.forEach(function (enemy) {
+                enemy.kill();
+            }, this);
+        }
 
-   },
+    },
 
-   fireBullet: function (enemy) {
-    var redBullet = game.add.sprite(enemy.x, enemy.y, 'redBullet');
-    redBullet.anchor.setTo(0.5, 0.5);
-    game.physics.arcade.enable(redBullet);
-    redBullet.rotation = game.physics.arcade.angleBetween(redBullet, this.player);
-    game.physics.arcade.moveToObject(redBullet, this.player, 500);
-    this.redBullets.add(redBullet);
-},
+    fireBullet: function (enemy) {
+        var redBullet = game.add.sprite(enemy.x, enemy.y, 'redBullet');
+        redBullet.anchor.setTo(0.5, 0.5);
+        game.physics.arcade.enable(redBullet);
+        redBullet.rotation = game.physics.arcade.angleBetween(redBullet, this.center);
+        game.physics.arcade.moveToObject(redBullet, this.center, 600);
+        this.redBullets.add(redBullet);
+    },
 
-    // function that gets called when bullet goes out of sight
-    bulletOut: function(redBullet){
+    bulletOut: function (redBullet) {
         console.log('ef');
         redBullet.kill();
         this.clearEnemies();
