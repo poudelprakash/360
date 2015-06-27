@@ -5,16 +5,20 @@ var play = {
         this.spawnDelay = 1600;
         this.spawnTimer = game.time.time;
         this.enemyRadius = game.world.height / 2.2;
-        this.timer = game.add.text(16, 16, '00:00', {fontSize: '32px', fill: '#fff'});
+        this.timer = game.add.text(16, 16, '00:00', {
+            font: '32px roboto_slabregular',
+            fill: '#fff'
+        });
 
         this.center = game.add.graphics(game.world.centerX, game.world.centerY);
         this.circle = game.add.graphics(game.world.centerX, game.world.centerY);
         this.circle.beginFill(0xbbada0, 1.0);
         this.circle.drawCircle(0, 0, 80);
 
-        this.scoreText = game.add.text(game.world.centerX, game.world.centerY, '');
-        this.scoreText.fontSize = 32;
-        this.scoreText.fill = '#fff';
+        this.scoreText = game.add.text(game.world.centerX, game.world.centerY, '', {
+            font: '32px roboto_slabregular',
+            fill: '#fff'
+        });
         this.scoreText.anchor.setTo(0.5);
         this.scoreText.align = 'center';
 
