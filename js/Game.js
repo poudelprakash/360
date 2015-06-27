@@ -16,7 +16,7 @@ var playState = {
         this.score = 0;
         this.life = 10;
 
-        this.spawnDelay = 1600; 
+        this.spawnDelay = 1600;
         this.spawnTimer = game.time.time;
 
         game.stage.backgroundColor = '#3498db';
@@ -35,6 +35,8 @@ var playState = {
 
         this.enemies = game.add.group();
         this.redBullets = game.add.group();
+        this.redBullets.enableBody = true;
+        this.redBullets.physicsBodyType = Phaser.Physics.ARCADE;
         this.blueBullets = game.add.group();
 
         this.shield = game.add.sprite(game.world.centerX + 75, game.world.centerY, 'shield');
@@ -64,11 +66,6 @@ var playState = {
         if (this.cursor.up.isDown || (this.game.time.time > this.spawnTimer)) {
             this.spawnEnemy();
         }
-
-
-
-
-
     },
     checkMissedBullets: function(){
 
@@ -82,6 +79,7 @@ var playState = {
     },
 
     spawnEnemy: function () {
+        this.clearEnemies();
         var enemyPosition = this.circlePoints(this.enemyRadius);
         var enemy = game.add.sprite(enemyPosition.x, enemyPosition.y, 'enemy');
         enemy.rotation = this.game.physics.arcade.angleBetween(enemy, this.player);
@@ -96,20 +94,27 @@ var playState = {
     },
 
     clearEnemies: function(){
-        this.enemies.destroy();
-    },
+        if(this.redBullets.length>0){
+           this.redBullets.forEach(function(bullet) {
+              bullet.kill();
+          },this);
+       }
+       if(this.enemies.length>=1){
+           this.enemies.forEach(function(enemy) {
+              enemy.kill();
+          },this);
+       }
 
-    fireBullet: function (enemy) {
-        var redBullet = game.add.sprite(enemy.x, enemy.y, 'redBullet');
-        redBullet.anchor.setTo(0.5, 0.5);
-        game.physics.arcade.enable(redBullet);
-        redBullet.rotation = game.physics.arcade.angleBetween(redBullet, this.player);
-        game.physics.arcade.moveToObject(redBullet, this.player, 500);
-        
-        redBullet.events.onOutOfBounds.add( this.bulletOut );
+   },
 
-        this.redBullets.add(redBullet);
-    },
+   fireBullet: function (enemy) {
+    var redBullet = game.add.sprite(enemy.x, enemy.y, 'redBullet');
+    redBullet.anchor.setTo(0.5, 0.5);
+    game.physics.arcade.enable(redBullet);
+    redBullet.rotation = game.physics.arcade.angleBetween(redBullet, this.player);
+    game.physics.arcade.moveToObject(redBullet, this.player, 500);
+    this.redBullets.add(redBullet);
+},
 
     // function that gets called when bullet goes out of sight
     bulletOut: function(redBullet){
