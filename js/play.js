@@ -1,9 +1,9 @@
-var play = function (game) {
+var play = function(game) {
 
 };
 
 play.prototype = {
-    create: function () {
+    create: function() {
         this.score = 0;
         this.life = 10;
         this.spawnDelay = 1600;
@@ -58,7 +58,7 @@ play.prototype = {
         this.cursor = this.input.keyboard.createCursorKeys();
     },
 
-    update: function () {
+    update: function() {
         this.scoreText.setText(this.score);
         this.moveShield();
         this.updateTimer();
@@ -67,123 +67,121 @@ play.prototype = {
         this.physics.arcade.collide(this.blueBullets, this.enemies, this.deathHandler, null, this);
 
         if (this.time.time > this.spawnTimer) {
-            if (this.timer.duration >= 55000){
+            if (this.timer.duration > 40000) {
                 this.enemiesTotal = 1;
-            }else if(this.timer.duration >= 45000 && this.timer.duration < 55000){
+            } else if (this.timer.duration > 20000 && this.timer.duration <= 40000) {
                 this.enemiesTotal = 2;
-            }else if(this.timer.duration >=0 && this.timer.duration < 45000){
-                this.enemiesTotal =3;
+            } else if (this.timer.duration >= 0 && this.timer.duration <= 20000) {
+                this.enemiesTotal = 3;
             }
             this.spawnEnemy();
         }
-},
+    },
 
-deathHandler: function (blueBullet, enemy) {
-    this.score++;
-    blueBullet.kill();
-    enemy.kill();
-},
+    deathHandler: function(blueBullet, enemy) {
+        this.score++;
+        blueBullet.kill();
+        enemy.kill();
+    },
 
-spawnEnemy: function () {
-    this.clearEnemies();
+    spawnEnemy: function() {
+        this.clearEnemies();
 
-    for(var i=1; i<=this.enemiesTotal; i++){
-        var enemyPosition = this.circlePoints(this.enemyRadius);
-        var enemy = this.add.sprite(enemyPosition.x, enemyPosition.y, 'enemy');
-        enemy.rotation = this.physics.arcade.angleBetween(enemy, this.center);
-        enemy.scale.x = 3.5;
-        enemy.scale.y = 3.5;
-        enemy.anchor.setTo(0.5, 0.5);
-        this.physics.arcade.enable(enemy);
+        for (var i = 1; i <= this.enemiesTotal; i++) {
+            var enemyPosition = this.circlePoints(this.enemyRadius);
+            var enemy = this.add.sprite(enemyPosition.x, enemyPosition.y, 'enemy');
+            enemy.rotation = this.physics.arcade.angleBetween(enemy, this.center);
+            enemy.scale.x = 3.5;
+            enemy.scale.y = 3.5;
+            enemy.anchor.setTo(0.5, 0.5);
+            this.physics.arcade.enable(enemy);
 
-        this.enemies.add(enemy);
-        this.fireBullet(enemy);
+            this.enemies.add(enemy);
+            this.fireBullet(enemy);
+        }
+
+        this.spawnTimer = this.time.time + this.spawnDelay;
+    },
+
+    clearEnemies: function() {
+        if (this.redBullets.length > 0) {
+            this.redBullets.forEach(function(bullet) {
+                bullet.kill();
+            }, this);
+        }
+        if (this.enemies.length >= this.enemiesTotal) {
+            this.enemies.forEach(function(enemy) {
+                enemy.kill();
+            }, this);
+        }
+
+    },
+
+    fireBullet: function(enemy) {
+        var redBullet = this.add.sprite(enemy.x, enemy.y, 'redBullet');
+        redBullet.anchor.setTo(0.5, 0.5);
+        this.physics.arcade.enable(redBullet);
+        redBullet.rotation = this.physics.arcade.angleBetween(redBullet, this.center);
+        this.physics.arcade.moveToObject(redBullet, this.center, 500);
+        this.redBullets.add(redBullet);
+    },
+
+    reflectBack: function(shield, redBullet) {
+        redBullet.kill();
+        this.hit.play();
+
+        var blueBullet = this.add.sprite(redBullet.position.x, redBullet.position.y, 'blueBullet');
+        this.physics.arcade.enable(blueBullet);
+
+        blueBullet.anchor.setTo(0.5, 0.5);
+        blueBullet.rotation = redBullet.rotation;
+        blueBullet.body.velocity.x = -2 * redBullet.body.velocity.x;
+        blueBullet.body.velocity.y = -2 * redBullet.body.velocity.y;
+
+        this.blueBullets.add(blueBullet);
+    },
+
+    updateTimer: function() {
+        var seconds = Math.floor(this.timer.duration / 1000) % 60;
+        var milliseconds = Math.floor(this.timer.duration) % 60;
+
+        if (milliseconds < 10) milliseconds = '0' + milliseconds;
+        if (seconds < 10) seconds = '0' + seconds;
+        this.timerText.setText(seconds + ':' + milliseconds);
+    },
+
+    moveShield: function() {
+        if (this.cursor.left.isDown) {
+            this.shield.rotation = this.rotation + Math.PI / 2;
+
+            this.shield.x = this.world.centerX + Math.cos(this.rotation) * (this.shield.radius + this.shield.height / 2);
+            this.shield.y = this.world.centerY + Math.sin(this.rotation) * (this.shield.radius + this.shield.height / 2);
+
+            this.rotation -= this.rotationSpeed;
+        } else if (this.cursor.right.isDown) {
+            this.shield.rotation = this.rotation + Math.PI / 2;
+
+            this.shield.x = this.world.centerX + Math.cos(this.rotation) * (this.shield.radius + this.shield.height / 2);
+            this.shield.y = this.world.centerY + Math.sin(this.rotation) * (this.shield.radius + this.shield.height / 2);
+
+            this.rotation += this.rotationSpeed;
+        } else {
+            this.shield.rotation = this.rotation + Math.PI / 2;
+        }
+    },
+
+    circlePoints: function(radius) {
+        var angle = this.rnd.integerInRange(0, 360);
+        var x = radius * Math.cos(this.math.degToRad(angle)) + this.world.centerX;
+        var y = radius * Math.sin(this.math.degToRad(angle)) + this.world.centerY;
+
+        return {
+            x: x,
+            y: y
+        };
+    },
+
+    endGame: function() {
+        this.state.start('GameOver', true, false, this.score);
     }
-
-    this.spawnTimer = this.time.time + this.spawnDelay;
-},
-
-clearEnemies: function () {
-    if (this.redBullets.length > 0) {
-        this.redBullets.forEach(function (bullet) {
-            bullet.kill();
-        }, this);
-    }
-    if (this.enemies.length >= this.enemiesTotal) {
-        this.enemies.forEach(function (enemy) {
-            enemy.kill();
-        }, this);
-    }
-
-},
-
-fireBullet: function (enemy) {
-    var redBullet = this.add.sprite(enemy.x, enemy.y, 'redBullet');
-    redBullet.anchor.setTo(0.5, 0.5);
-    this.physics.arcade.enable(redBullet);
-    redBullet.rotation = this.physics.arcade.angleBetween(redBullet, this.center);
-    this.physics.arcade.moveToObject(redBullet, this.center, 500);
-    this.redBullets.add(redBullet);
-},
-
-reflectBack: function (shield, redBullet) {
-    redBullet.kill();
-    this.hit.play();
-
-    var blueBullet = this.add.sprite(redBullet.position.x, redBullet.position.y, 'blueBullet');
-    this.physics.arcade.enable(blueBullet);
-
-    blueBullet.anchor.setTo(0.5, 0.5);
-    blueBullet.rotation = redBullet.rotation;
-    blueBullet.body.velocity.x = -2 * redBullet.body.velocity.x;
-    blueBullet.body.velocity.y = -2 * redBullet.body.velocity.y;
-
-    this.blueBullets.add(blueBullet);
-},
-
-updateTimer: function () {
-    var seconds = Math.floor(this.timer.duration / 1000) % 60;
-    var milliseconds = Math.floor(this.timer.duration) % 60;
-
-    if (milliseconds < 10) milliseconds = '0' + milliseconds;
-    if (seconds < 10) seconds = '0' + seconds;
-    this.timerText.setText(seconds + ':' + milliseconds);
-},
-
-moveShield: function () {
-    if (this.cursor.left.isDown) {
-        this.shield.rotation = this.rotation + Math.PI / 2;
-
-        this.shield.x = this.world.centerX + Math.cos(this.rotation) * ( this.shield.radius + this.shield.height / 2 );
-        this.shield.y = this.world.centerY + Math.sin(this.rotation) * ( this.shield.radius + this.shield.height / 2 );
-
-        this.rotation -= this.rotationSpeed;
-    }
-    else if (this.cursor.right.isDown) {
-        this.shield.rotation = this.rotation + Math.PI / 2;
-
-        this.shield.x = this.world.centerX + Math.cos(this.rotation) * ( this.shield.radius + this.shield.height / 2 );
-        this.shield.y = this.world.centerY + Math.sin(this.rotation) * ( this.shield.radius + this.shield.height / 2 );
-
-        this.rotation += this.rotationSpeed;
-    }
-    else {
-        this.shield.rotation = this.rotation + Math.PI / 2;
-    }
-},
-
-circlePoints: function (radius) {
-    var angle = this.rnd.integerInRange(0, 360);
-    var x = radius * Math.cos(this.math.degToRad(angle)) + this.world.centerX;
-    var y = radius * Math.sin(this.math.degToRad(angle)) + this.world.centerY;
-
-    return {
-        x: x,
-        y: y
-    };
-},
-
-endGame: function () {
-    this.state.start('GameOver', true, false, this.score);
-}
 };
