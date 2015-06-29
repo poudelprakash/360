@@ -59,12 +59,16 @@ play.prototype = {
     },
 
     update: function() {
-        this.scoreText.setText(this.score);
+        this.scoreText.setText(this.life);
         this.moveShield();
         this.updateTimer();
 
         this.physics.arcade.overlap(this.shield, this.redBullets, this.reflectBack, null, this);
         this.physics.arcade.collide(this.blueBullets, this.enemies, this.deathHandler, null, this);
+
+        if (this.life <= 0){
+            this.endGame();
+        }
 
         if (this.time.time > this.spawnTimer) {
             if (this.timer.duration > 40000) {
@@ -105,6 +109,7 @@ play.prototype = {
 
     clearEnemies: function() {
         if (this.redBullets.length > 0) {
+            this.life -= this.redBullets.total;
             this.redBullets.forEach(function(bullet) {
                 bullet.kill();
             }, this);
@@ -182,6 +187,7 @@ play.prototype = {
     },
 
     endGame: function() {
-        this.state.start('GameOver', true, false, this.score);
+        var secondsLasted = (60000- this.timer.duration)/1000;
+        this.state.start('GameOver', true, false, secondsLasted.toFixed(1));
     }
 };
