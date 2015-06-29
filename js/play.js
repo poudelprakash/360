@@ -11,7 +11,7 @@ play.prototype = {
         this.enemyRadius = this.world.height / 2.2;
 
         this.timer = this.time.create(false);
-        this.timer.add(1000, this.endGame, this);
+        this.timer.add(60000, this.endGame, this);
         this.timer.start();
 
         this.timerText = this.add.text(16, 16, '00:00', {
