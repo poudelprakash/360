@@ -9,7 +9,12 @@ play.prototype = {
         this.spawnDelay = 1600;
         this.spawnTimer = this.time.time;
         this.enemyRadius = this.world.height / 2.2;
-        this.timer = this.add.text(16, 16, '00:00', {
+
+        this.timer = this.time.create(false);
+        this.timer.add(1000, this.endGame, this);
+        this.timer.start();
+
+        this.timerText = this.add.text(16, 16, '00:00', {
             font: '32px roboto_slabregular',
             fill: '#fff'
         });
@@ -126,12 +131,12 @@ play.prototype = {
     },
 
     updateTimer: function () {
-        var seconds = Math.floor(this.time.now / 1000) % 60;
-        var milliseconds = Math.floor(this.time.now) % 60;
+        var seconds = Math.floor(this.timer.duration / 1000) % 60;
+        var milliseconds = Math.floor(this.timer.duration) % 60;
 
         if (milliseconds < 10) milliseconds = '0' + milliseconds;
         if (seconds < 10) seconds = '0' + seconds;
-        this.timer.setText(seconds + ':' + milliseconds);
+        this.timerText.setText(seconds + ':' + milliseconds);
     },
 
     moveShield: function () {
@@ -165,5 +170,9 @@ play.prototype = {
             x: x,
             y: y
         };
+    },
+
+    endGame: function () {
+        this.state.start('GameOver', true, false, this.score);
     }
 };
