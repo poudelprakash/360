@@ -3,7 +3,7 @@
 
 Play the game [here](http://prakash014.github.io/360).
 
-**Note:** This game is a clone of [Reflektor](https://github.com/rantt/reflektor).
+**Note:** This game is a clone of [Reflektor](http://divideby5.com/games/reflektor).
 
 
 ### How to Play
